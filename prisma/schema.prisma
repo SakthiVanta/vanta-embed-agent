@@ -55,6 +55,14 @@ model Workspace {
   maxTools         Int @default(2) @map("max_tools")
   monthlyTokenQuota Int @default(100000) @map("monthly_token_quota")
   
+  // Stripe Integration
+  stripeCustomerId      String?   @unique @map("stripe_customer_id")
+  stripeSubscriptionId  String?   @unique @map("stripe_subscription_id")
+  subscriptionStatus    SubscriptionStatus @default(INCOMPLETE) @map("subscription_status")
+  currentPeriodStart    DateTime? @map("current_period_start")
+  currentPeriodEnd      DateTime? @map("current_period_end")
+  cancelAtPeriodEnd     Boolean   @default(false) @map("cancel_at_period_end")
+  
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -65,6 +73,8 @@ model Workspace {
   sessions    ChatSession[]
   auditLogs   AuditLog[]
   usageLogs   UsageLog[]
+  payments    Payment[]
+  invoices    Invoice[]
 
   @@map("workspaces")
 }
@@ -438,4 +448,91 @@ enum AuditAction {
   LOGIN
   LOGOUT
   API_KEY_ROTATED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_UPDATED
+  SUBSCRIPTION_CANCELLED
+  PAYMENT_SUCCEEDED
+  PAYMENT_FAILED
+}
+
+// ==================== STRIPE SUBSCRIPTION & PAYMENT ====================
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  PAUSED
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  workspaceId     String   @map("workspace_id")
+  
+  stripePaymentIntentId String @unique @map("stripe_payment_intent_id")
+  stripeCustomerId      String @map("stripe_customer_id")
+  amount                Int    // Amount in cents
+  currency              String @default("usd")
+  status                PaymentStatus
+  
+  description   String?
+  metadata      Json?
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([status])
+  @@map("payments")
+}
+
+model Invoice {
+  id              String   @id @default(cuid())
+  workspaceId     String   @map("workspace_id")
+  
+  stripeInvoiceId String   @unique @map("stripe_invoice_id")
+  stripeCustomerId String  @map("stripe_customer_id")
+  stripeSubscriptionId String? @map("stripe_subscription_id")
+  
+  amountDue       Int      @map("amount_due")
+  amountPaid      Int      @map("amount_paid")
+  amountRemaining Int      @map("amount_remaining")
+  currency        String   @default("usd")
+  status          InvoiceStatus
+  
+  pdfUrl          String?  @map("pdf_url")
+  hostedInvoiceUrl String? @map("hosted_invoice_url")
+  
+  periodStart     DateTime @map("period_start")
+  periodEnd       DateTime @map("period_end")
+  
+  createdAt       DateTime @default(now()) @map("created_at")
+  
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([status])
+  @@map("invoices")
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  UNCOLLECTIBLE
+  VOID
 }

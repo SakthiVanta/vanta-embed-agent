@@ -1,11 +1,18 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { Button, Card, CardContent, CardHeader, Input } from '@/components'
-import { CreateAgentModal } from '@/components/dashboard/create-agent-modal'
 import { useWorkspace, useAgents } from '@/hooks'
 import { Bot, Plus, Search, Edit, Trash2, Copy, MessageSquare, Wrench } from 'lucide-react'
 import type { Agent } from '@/types'
+
+// Dynamically import CreateAgentModal to avoid hydration mismatch with Dialog
+const CreateAgentModal = dynamic(
+  () => import('@/components/dashboard/create-agent-modal').then(mod => mod.CreateAgentModal),
+  { ssr: false }
+)
 
 export default function AgentsPage() {
   const { workspaceId } = useWorkspace()
@@ -84,13 +91,13 @@ export default function AgentsPage() {
                   key={agent.id}
                   className="flex items-center justify-between p-4 rounded-lg border hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                 >
-                  <div className="flex items-center gap-4">
+                  <Link href={`/agents/${agent.id}`} className="flex items-center gap-4 flex-1">
                     <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center">
                       <Bot className="w-5 h-5 text-emerald-600" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium">{agent.name}</h3>
+                        <h3 className="font-medium hover:text-emerald-600 transition-colors">{agent.name}</h3>
                         <span className={`px-2 py-0.5 text-xs rounded-full ${agent.isActive
                           ? 'bg-emerald-100 text-emerald-700'
                           : 'bg-slate-100 text-slate-600'
@@ -118,8 +125,17 @@ export default function AgentsPage() {
                         <span>{agent.provider} / {agent.model}</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex items-center gap-2">
+                    <Link href={`/agents/${agent.id}`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="View Agent"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     <Button
                       variant="ghost"
                       size="sm"

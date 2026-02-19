@@ -48,6 +48,12 @@ export type WorkspaceMinAggregateOutputType = {
   maxAgents: number | null
   maxTools: number | null
   monthlyTokenQuota: number | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: $Enums.SubscriptionStatus | null
+  currentPeriodStart: Date | null
+  currentPeriodEnd: Date | null
+  cancelAtPeriodEnd: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +68,12 @@ export type WorkspaceMaxAggregateOutputType = {
   maxAgents: number | null
   maxTools: number | null
   monthlyTokenQuota: number | null
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: $Enums.SubscriptionStatus | null
+  currentPeriodStart: Date | null
+  currentPeriodEnd: Date | null
+  cancelAtPeriodEnd: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +88,12 @@ export type WorkspaceCountAggregateOutputType = {
   maxAgents: number
   maxTools: number
   monthlyTokenQuota: number
+  stripeCustomerId: number
+  stripeSubscriptionId: number
+  subscriptionStatus: number
+  currentPeriodStart: number
+  currentPeriodEnd: number
+  cancelAtPeriodEnd: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +122,12 @@ export type WorkspaceMinAggregateInputType = {
   maxAgents?: true
   maxTools?: true
   monthlyTokenQuota?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodStart?: true
+  currentPeriodEnd?: true
+  cancelAtPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +142,12 @@ export type WorkspaceMaxAggregateInputType = {
   maxAgents?: true
   maxTools?: true
   monthlyTokenQuota?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodStart?: true
+  currentPeriodEnd?: true
+  cancelAtPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -132,6 +162,12 @@ export type WorkspaceCountAggregateInputType = {
   maxAgents?: true
   maxTools?: true
   monthlyTokenQuota?: true
+  stripeCustomerId?: true
+  stripeSubscriptionId?: true
+  subscriptionStatus?: true
+  currentPeriodStart?: true
+  currentPeriodEnd?: true
+  cancelAtPeriodEnd?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -233,6 +269,12 @@ export type WorkspaceGroupByOutputType = {
   maxAgents: number
   maxTools: number
   monthlyTokenQuota: number
+  stripeCustomerId: string | null
+  stripeSubscriptionId: string | null
+  subscriptionStatus: $Enums.SubscriptionStatus
+  currentPeriodStart: Date | null
+  currentPeriodEnd: Date | null
+  cancelAtPeriodEnd: boolean
   createdAt: Date
   updatedAt: Date
   _count: WorkspaceCountAggregateOutputType | null
@@ -270,6 +312,12 @@ export type WorkspaceWhereInput = {
   maxAgents?: Prisma.IntFilter<"Workspace"> | number
   maxTools?: Prisma.IntFilter<"Workspace"> | number
   monthlyTokenQuota?: Prisma.IntFilter<"Workspace"> | number
+  stripeCustomerId?: Prisma.StringNullableFilter<"Workspace"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableFilter<"Workspace"> | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFilter<"Workspace"> | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.DateTimeNullableFilter<"Workspace"> | Date | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableFilter<"Workspace"> | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFilter<"Workspace"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   members?: Prisma.WorkspaceMemberListRelationFilter
@@ -279,6 +327,8 @@ export type WorkspaceWhereInput = {
   sessions?: Prisma.ChatSessionListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   usageLogs?: Prisma.UsageLogListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
 }
 
 export type WorkspaceOrderByWithRelationInput = {
@@ -291,6 +341,12 @@ export type WorkspaceOrderByWithRelationInput = {
   maxAgents?: Prisma.SortOrder
   maxTools?: Prisma.SortOrder
   monthlyTokenQuota?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancelAtPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   members?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
@@ -300,11 +356,15 @@ export type WorkspaceOrderByWithRelationInput = {
   sessions?: Prisma.ChatSessionOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   usageLogs?: Prisma.UsageLogOrderByRelationAggregateInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
+  invoices?: Prisma.InvoiceOrderByRelationAggregateInput
 }
 
 export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   slug?: string
+  stripeCustomerId?: string
+  stripeSubscriptionId?: string
   AND?: Prisma.WorkspaceWhereInput | Prisma.WorkspaceWhereInput[]
   OR?: Prisma.WorkspaceWhereInput[]
   NOT?: Prisma.WorkspaceWhereInput | Prisma.WorkspaceWhereInput[]
@@ -315,6 +375,10 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   maxAgents?: Prisma.IntFilter<"Workspace"> | number
   maxTools?: Prisma.IntFilter<"Workspace"> | number
   monthlyTokenQuota?: Prisma.IntFilter<"Workspace"> | number
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFilter<"Workspace"> | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.DateTimeNullableFilter<"Workspace"> | Date | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableFilter<"Workspace"> | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFilter<"Workspace"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workspace"> | Date | string
   members?: Prisma.WorkspaceMemberListRelationFilter
@@ -324,7 +388,9 @@ export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.ChatSessionListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   usageLogs?: Prisma.UsageLogListRelationFilter
-}, "id" | "slug">
+  payments?: Prisma.PaymentListRelationFilter
+  invoices?: Prisma.InvoiceListRelationFilter
+}, "id" | "slug" | "stripeCustomerId" | "stripeSubscriptionId">
 
 export type WorkspaceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -336,6 +402,12 @@ export type WorkspaceOrderByWithAggregationInput = {
   maxAgents?: Prisma.SortOrder
   maxTools?: Prisma.SortOrder
   monthlyTokenQuota?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodStart?: Prisma.SortOrderInput | Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrderInput | Prisma.SortOrder
+  cancelAtPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WorkspaceCountOrderByAggregateInput
@@ -358,6 +430,12 @@ export type WorkspaceScalarWhereWithAggregatesInput = {
   maxAgents?: Prisma.IntWithAggregatesFilter<"Workspace"> | number
   maxTools?: Prisma.IntWithAggregatesFilter<"Workspace"> | number
   monthlyTokenQuota?: Prisma.IntWithAggregatesFilter<"Workspace"> | number
+  stripeCustomerId?: Prisma.StringNullableWithAggregatesFilter<"Workspace"> | string | null
+  stripeSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"Workspace"> | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusWithAggregatesFilter<"Workspace"> | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.DateTimeNullableWithAggregatesFilter<"Workspace"> | Date | string | null
+  currentPeriodEnd?: Prisma.DateTimeNullableWithAggregatesFilter<"Workspace"> | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolWithAggregatesFilter<"Workspace"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workspace"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Workspace"> | Date | string
 }
@@ -372,6 +450,12 @@ export type WorkspaceCreateInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -381,6 +465,8 @@ export type WorkspaceCreateInput = {
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateInput = {
@@ -393,6 +479,12 @@ export type WorkspaceUncheckedCreateInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -402,6 +494,8 @@ export type WorkspaceUncheckedCreateInput = {
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUpdateInput = {
@@ -414,6 +508,12 @@ export type WorkspaceUpdateInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -423,6 +523,8 @@ export type WorkspaceUpdateInput = {
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateInput = {
@@ -435,6 +537,12 @@ export type WorkspaceUncheckedUpdateInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -444,6 +552,8 @@ export type WorkspaceUncheckedUpdateInput = {
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateManyInput = {
@@ -456,6 +566,12 @@ export type WorkspaceCreateManyInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -470,6 +586,12 @@ export type WorkspaceUpdateManyMutationInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -484,6 +606,12 @@ export type WorkspaceUncheckedUpdateManyInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -498,6 +626,12 @@ export type WorkspaceCountOrderByAggregateInput = {
   maxAgents?: Prisma.SortOrder
   maxTools?: Prisma.SortOrder
   monthlyTokenQuota?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodStart?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
+  cancelAtPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,6 +652,12 @@ export type WorkspaceMaxOrderByAggregateInput = {
   maxAgents?: Prisma.SortOrder
   maxTools?: Prisma.SortOrder
   monthlyTokenQuota?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodStart?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
+  cancelAtPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -532,6 +672,12 @@ export type WorkspaceMinOrderByAggregateInput = {
   maxAgents?: Prisma.SortOrder
   maxTools?: Prisma.SortOrder
   monthlyTokenQuota?: Prisma.SortOrder
+  stripeCustomerId?: Prisma.SortOrder
+  stripeSubscriptionId?: Prisma.SortOrder
+  subscriptionStatus?: Prisma.SortOrder
+  currentPeriodStart?: Prisma.SortOrder
+  currentPeriodEnd?: Prisma.SortOrder
+  cancelAtPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -566,6 +712,10 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type EnumSubscriptionStatusFieldUpdateOperationsInput = {
+  set?: $Enums.SubscriptionStatus
 }
 
 export type WorkspaceCreateNestedOneWithoutMembersInput = {
@@ -668,6 +818,34 @@ export type WorkspaceUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.WorkspaceUpdateWithoutAuditLogsInput>, Prisma.WorkspaceUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type WorkspaceCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.WorkspaceUpsertWithoutPaymentsInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutPaymentsInput, Prisma.WorkspaceUpdateWithoutPaymentsInput>, Prisma.WorkspaceUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type WorkspaceCreateNestedOneWithoutInvoicesInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutInvoicesInput, Prisma.WorkspaceUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutInvoicesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+}
+
+export type WorkspaceUpdateOneRequiredWithoutInvoicesNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkspaceCreateWithoutInvoicesInput, Prisma.WorkspaceUncheckedCreateWithoutInvoicesInput>
+  connectOrCreate?: Prisma.WorkspaceCreateOrConnectWithoutInvoicesInput
+  upsert?: Prisma.WorkspaceUpsertWithoutInvoicesInput
+  connect?: Prisma.WorkspaceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkspaceUpdateToOneWithWhereWithoutInvoicesInput, Prisma.WorkspaceUpdateWithoutInvoicesInput>, Prisma.WorkspaceUncheckedUpdateWithoutInvoicesInput>
+}
+
 export type WorkspaceCreateWithoutMembersInput = {
   id?: string
   name: string
@@ -678,6 +856,12 @@ export type WorkspaceCreateWithoutMembersInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   agents?: Prisma.AgentCreateNestedManyWithoutWorkspaceInput
@@ -686,6 +870,8 @@ export type WorkspaceCreateWithoutMembersInput = {
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutMembersInput = {
@@ -698,6 +884,12 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   agents?: Prisma.AgentUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -706,6 +898,8 @@ export type WorkspaceUncheckedCreateWithoutMembersInput = {
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutMembersInput = {
@@ -734,6 +928,12 @@ export type WorkspaceUpdateWithoutMembersInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agents?: Prisma.AgentUpdateManyWithoutWorkspaceNestedInput
@@ -742,6 +942,8 @@ export type WorkspaceUpdateWithoutMembersInput = {
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutMembersInput = {
@@ -754,6 +956,12 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   agents?: Prisma.AgentUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -762,6 +970,8 @@ export type WorkspaceUncheckedUpdateWithoutMembersInput = {
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutProviderKeysInput = {
@@ -774,6 +984,12 @@ export type WorkspaceCreateWithoutProviderKeysInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -782,6 +998,8 @@ export type WorkspaceCreateWithoutProviderKeysInput = {
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutProviderKeysInput = {
@@ -794,6 +1012,12 @@ export type WorkspaceUncheckedCreateWithoutProviderKeysInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -802,6 +1026,8 @@ export type WorkspaceUncheckedCreateWithoutProviderKeysInput = {
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutProviderKeysInput = {
@@ -830,6 +1056,12 @@ export type WorkspaceUpdateWithoutProviderKeysInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -838,6 +1070,8 @@ export type WorkspaceUpdateWithoutProviderKeysInput = {
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutProviderKeysInput = {
@@ -850,6 +1084,12 @@ export type WorkspaceUncheckedUpdateWithoutProviderKeysInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -858,6 +1098,8 @@ export type WorkspaceUncheckedUpdateWithoutProviderKeysInput = {
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutApiKeysInput = {
@@ -870,6 +1112,12 @@ export type WorkspaceCreateWithoutApiKeysInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -878,6 +1126,8 @@ export type WorkspaceCreateWithoutApiKeysInput = {
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutApiKeysInput = {
@@ -890,6 +1140,12 @@ export type WorkspaceUncheckedCreateWithoutApiKeysInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -898,6 +1154,8 @@ export type WorkspaceUncheckedCreateWithoutApiKeysInput = {
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutApiKeysInput = {
@@ -926,6 +1184,12 @@ export type WorkspaceUpdateWithoutApiKeysInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -934,6 +1198,8 @@ export type WorkspaceUpdateWithoutApiKeysInput = {
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutApiKeysInput = {
@@ -946,6 +1212,12 @@ export type WorkspaceUncheckedUpdateWithoutApiKeysInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -954,6 +1226,8 @@ export type WorkspaceUncheckedUpdateWithoutApiKeysInput = {
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutAgentsInput = {
@@ -966,6 +1240,12 @@ export type WorkspaceCreateWithoutAgentsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -974,6 +1254,8 @@ export type WorkspaceCreateWithoutAgentsInput = {
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutAgentsInput = {
@@ -986,6 +1268,12 @@ export type WorkspaceUncheckedCreateWithoutAgentsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -994,6 +1282,8 @@ export type WorkspaceUncheckedCreateWithoutAgentsInput = {
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutAgentsInput = {
@@ -1022,6 +1312,12 @@ export type WorkspaceUpdateWithoutAgentsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -1030,6 +1326,8 @@ export type WorkspaceUpdateWithoutAgentsInput = {
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutAgentsInput = {
@@ -1042,6 +1340,12 @@ export type WorkspaceUncheckedUpdateWithoutAgentsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1050,6 +1354,8 @@ export type WorkspaceUncheckedUpdateWithoutAgentsInput = {
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutSessionsInput = {
@@ -1062,6 +1368,12 @@ export type WorkspaceCreateWithoutSessionsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -1070,6 +1382,8 @@ export type WorkspaceCreateWithoutSessionsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutSessionsInput = {
@@ -1082,6 +1396,12 @@ export type WorkspaceUncheckedCreateWithoutSessionsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1090,6 +1410,8 @@ export type WorkspaceUncheckedCreateWithoutSessionsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutSessionsInput = {
@@ -1118,6 +1440,12 @@ export type WorkspaceUpdateWithoutSessionsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -1126,6 +1454,8 @@ export type WorkspaceUpdateWithoutSessionsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
@@ -1138,6 +1468,12 @@ export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1146,6 +1482,8 @@ export type WorkspaceUncheckedUpdateWithoutSessionsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutUsageLogsInput = {
@@ -1158,6 +1496,12 @@ export type WorkspaceCreateWithoutUsageLogsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -1166,6 +1510,8 @@ export type WorkspaceCreateWithoutUsageLogsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutUsageLogsInput = {
@@ -1178,6 +1524,12 @@ export type WorkspaceUncheckedCreateWithoutUsageLogsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1186,6 +1538,8 @@ export type WorkspaceUncheckedCreateWithoutUsageLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutUsageLogsInput = {
@@ -1214,6 +1568,12 @@ export type WorkspaceUpdateWithoutUsageLogsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -1222,6 +1582,8 @@ export type WorkspaceUpdateWithoutUsageLogsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutUsageLogsInput = {
@@ -1234,6 +1596,12 @@ export type WorkspaceUncheckedUpdateWithoutUsageLogsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1242,6 +1610,8 @@ export type WorkspaceUncheckedUpdateWithoutUsageLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceCreateWithoutAuditLogsInput = {
@@ -1254,6 +1624,12 @@ export type WorkspaceCreateWithoutAuditLogsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
@@ -1262,6 +1638,8 @@ export type WorkspaceCreateWithoutAuditLogsInput = {
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceUncheckedCreateWithoutAuditLogsInput = {
@@ -1274,6 +1652,12 @@ export type WorkspaceUncheckedCreateWithoutAuditLogsInput = {
   maxAgents?: number
   maxTools?: number
   monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -1282,6 +1666,8 @@ export type WorkspaceUncheckedCreateWithoutAuditLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutWorkspaceInput
   sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
   usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
 }
 
 export type WorkspaceCreateOrConnectWithoutAuditLogsInput = {
@@ -1310,6 +1696,12 @@ export type WorkspaceUpdateWithoutAuditLogsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
@@ -1318,6 +1710,8 @@ export type WorkspaceUpdateWithoutAuditLogsInput = {
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
 }
 
 export type WorkspaceUncheckedUpdateWithoutAuditLogsInput = {
@@ -1330,6 +1724,12 @@ export type WorkspaceUncheckedUpdateWithoutAuditLogsInput = {
   maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
   maxTools?: Prisma.IntFieldUpdateOperationsInput | number
   monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -1338,6 +1738,264 @@ export type WorkspaceUncheckedUpdateWithoutAuditLogsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
   sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
   usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  status?: $Enums.WorkspaceStatus
+  tier?: $Enums.WorkspaceTier
+  maxAgents?: number
+  maxTools?: number
+  monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  agents?: Prisma.AgentCreateNestedManyWithoutWorkspaceInput
+  providerKeys?: Prisma.ProviderKeyCreateNestedManyWithoutWorkspaceInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  status?: $Enums.WorkspaceStatus
+  tier?: $Enums.WorkspaceTier
+  maxAgents?: number
+  maxTools?: number
+  monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  agents?: Prisma.AgentUncheckedCreateNestedManyWithoutWorkspaceInput
+  providerKeys?: Prisma.ProviderKeyUncheckedCreateNestedManyWithoutWorkspaceInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentsInput>
+}
+
+export type WorkspaceUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutPaymentsInput, Prisma.WorkspaceUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutPaymentsInput, Prisma.WorkspaceUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutPaymentsInput, Prisma.WorkspaceUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type WorkspaceUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput | $Enums.WorkspaceStatus
+  tier?: Prisma.EnumWorkspaceTierFieldUpdateOperationsInput | $Enums.WorkspaceTier
+  maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
+  maxTools?: Prisma.IntFieldUpdateOperationsInput | number
+  monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  agents?: Prisma.AgentUpdateManyWithoutWorkspaceNestedInput
+  providerKeys?: Prisma.ProviderKeyUpdateManyWithoutWorkspaceNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput | $Enums.WorkspaceStatus
+  tier?: Prisma.EnumWorkspaceTierFieldUpdateOperationsInput | $Enums.WorkspaceTier
+  maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
+  maxTools?: Prisma.IntFieldUpdateOperationsInput | number
+  monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  agents?: Prisma.AgentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  providerKeys?: Prisma.ProviderKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  status?: $Enums.WorkspaceStatus
+  tier?: $Enums.WorkspaceTier
+  maxAgents?: number
+  maxTools?: number
+  monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberCreateNestedManyWithoutWorkspaceInput
+  agents?: Prisma.AgentCreateNestedManyWithoutWorkspaceInput
+  providerKeys?: Prisma.ProviderKeyCreateNestedManyWithoutWorkspaceInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.ChatSessionCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutWorkspaceInput
+  usageLogs?: Prisma.UsageLogCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceUncheckedCreateWithoutInvoicesInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  status?: $Enums.WorkspaceStatus
+  tier?: $Enums.WorkspaceTier
+  maxAgents?: number
+  maxTools?: number
+  monthlyTokenQuota?: number
+  stripeCustomerId?: string | null
+  stripeSubscriptionId?: string | null
+  subscriptionStatus?: $Enums.SubscriptionStatus
+  currentPeriodStart?: Date | string | null
+  currentPeriodEnd?: Date | string | null
+  cancelAtPeriodEnd?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutWorkspaceInput
+  agents?: Prisma.AgentUncheckedCreateNestedManyWithoutWorkspaceInput
+  providerKeys?: Prisma.ProviderKeyUncheckedCreateNestedManyWithoutWorkspaceInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutWorkspaceInput
+  sessions?: Prisma.ChatSessionUncheckedCreateNestedManyWithoutWorkspaceInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  usageLogs?: Prisma.UsageLogUncheckedCreateNestedManyWithoutWorkspaceInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutWorkspaceInput
+}
+
+export type WorkspaceCreateOrConnectWithoutInvoicesInput = {
+  where: Prisma.WorkspaceWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutInvoicesInput, Prisma.WorkspaceUncheckedCreateWithoutInvoicesInput>
+}
+
+export type WorkspaceUpsertWithoutInvoicesInput = {
+  update: Prisma.XOR<Prisma.WorkspaceUpdateWithoutInvoicesInput, Prisma.WorkspaceUncheckedUpdateWithoutInvoicesInput>
+  create: Prisma.XOR<Prisma.WorkspaceCreateWithoutInvoicesInput, Prisma.WorkspaceUncheckedCreateWithoutInvoicesInput>
+  where?: Prisma.WorkspaceWhereInput
+}
+
+export type WorkspaceUpdateToOneWithWhereWithoutInvoicesInput = {
+  where?: Prisma.WorkspaceWhereInput
+  data: Prisma.XOR<Prisma.WorkspaceUpdateWithoutInvoicesInput, Prisma.WorkspaceUncheckedUpdateWithoutInvoicesInput>
+}
+
+export type WorkspaceUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput | $Enums.WorkspaceStatus
+  tier?: Prisma.EnumWorkspaceTierFieldUpdateOperationsInput | $Enums.WorkspaceTier
+  maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
+  maxTools?: Prisma.IntFieldUpdateOperationsInput | number
+  monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUpdateManyWithoutWorkspaceNestedInput
+  agents?: Prisma.AgentUpdateManyWithoutWorkspaceNestedInput
+  providerKeys?: Prisma.ProviderKeyUpdateManyWithoutWorkspaceNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.ChatSessionUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutWorkspaceNestedInput
+  usageLogs?: Prisma.UsageLogUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutWorkspaceNestedInput
+}
+
+export type WorkspaceUncheckedUpdateWithoutInvoicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumWorkspaceStatusFieldUpdateOperationsInput | $Enums.WorkspaceStatus
+  tier?: Prisma.EnumWorkspaceTierFieldUpdateOperationsInput | $Enums.WorkspaceTier
+  maxAgents?: Prisma.IntFieldUpdateOperationsInput | number
+  maxTools?: Prisma.IntFieldUpdateOperationsInput | number
+  monthlyTokenQuota?: Prisma.IntFieldUpdateOperationsInput | number
+  stripeCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  subscriptionStatus?: Prisma.EnumSubscriptionStatusFieldUpdateOperationsInput | $Enums.SubscriptionStatus
+  currentPeriodStart?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodEnd?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  cancelAtPeriodEnd?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutWorkspaceNestedInput
+  agents?: Prisma.AgentUncheckedUpdateManyWithoutWorkspaceNestedInput
+  providerKeys?: Prisma.ProviderKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutWorkspaceNestedInput
+  sessions?: Prisma.ChatSessionUncheckedUpdateManyWithoutWorkspaceNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  usageLogs?: Prisma.UsageLogUncheckedUpdateManyWithoutWorkspaceNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutWorkspaceNestedInput
 }
 
 
@@ -1353,6 +2011,8 @@ export type WorkspaceCountOutputType = {
   sessions: number
   auditLogs: number
   usageLogs: number
+  payments: number
+  invoices: number
 }
 
 export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1363,6 +2023,8 @@ export type WorkspaceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensi
   sessions?: boolean | WorkspaceCountOutputTypeCountSessionsArgs
   auditLogs?: boolean | WorkspaceCountOutputTypeCountAuditLogsArgs
   usageLogs?: boolean | WorkspaceCountOutputTypeCountUsageLogsArgs
+  payments?: boolean | WorkspaceCountOutputTypeCountPaymentsArgs
+  invoices?: boolean | WorkspaceCountOutputTypeCountInvoicesArgs
 }
 
 /**
@@ -1424,6 +2086,20 @@ export type WorkspaceCountOutputTypeCountUsageLogsArgs<ExtArgs extends runtime.T
   where?: Prisma.UsageLogWhereInput
 }
 
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
+/**
+ * WorkspaceCountOutputType without action
+ */
+export type WorkspaceCountOutputTypeCountInvoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceWhereInput
+}
+
 
 export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1435,6 +2111,12 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   maxAgents?: boolean
   maxTools?: boolean
   monthlyTokenQuota?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodStart?: boolean
+  currentPeriodEnd?: boolean
+  cancelAtPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
@@ -1444,6 +2126,8 @@ export type WorkspaceSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   sessions?: boolean | Prisma.Workspace$sessionsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.Workspace$auditLogsArgs<ExtArgs>
   usageLogs?: boolean | Prisma.Workspace$usageLogsArgs<ExtArgs>
+  payments?: boolean | Prisma.Workspace$paymentsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Workspace$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workspace"]>
 
@@ -1457,6 +2141,12 @@ export type WorkspaceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   maxAgents?: boolean
   maxTools?: boolean
   monthlyTokenQuota?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodStart?: boolean
+  currentPeriodEnd?: boolean
+  cancelAtPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["workspace"]>
@@ -1471,6 +2161,12 @@ export type WorkspaceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   maxAgents?: boolean
   maxTools?: boolean
   monthlyTokenQuota?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodStart?: boolean
+  currentPeriodEnd?: boolean
+  cancelAtPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["workspace"]>
@@ -1485,11 +2181,17 @@ export type WorkspaceSelectScalar = {
   maxAgents?: boolean
   maxTools?: boolean
   monthlyTokenQuota?: boolean
+  stripeCustomerId?: boolean
+  stripeSubscriptionId?: boolean
+  subscriptionStatus?: boolean
+  currentPeriodStart?: boolean
+  currentPeriodEnd?: boolean
+  cancelAtPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "status" | "tier" | "maxAgents" | "maxTools" | "monthlyTokenQuota" | "createdAt" | "updatedAt", ExtArgs["result"]["workspace"]>
+export type WorkspaceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "status" | "tier" | "maxAgents" | "maxTools" | "monthlyTokenQuota" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus" | "currentPeriodStart" | "currentPeriodEnd" | "cancelAtPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["workspace"]>
 export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   members?: boolean | Prisma.Workspace$membersArgs<ExtArgs>
   agents?: boolean | Prisma.Workspace$agentsArgs<ExtArgs>
@@ -1498,6 +2200,8 @@ export type WorkspaceInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   sessions?: boolean | Prisma.Workspace$sessionsArgs<ExtArgs>
   auditLogs?: boolean | Prisma.Workspace$auditLogsArgs<ExtArgs>
   usageLogs?: boolean | Prisma.Workspace$usageLogsArgs<ExtArgs>
+  payments?: boolean | Prisma.Workspace$paymentsArgs<ExtArgs>
+  invoices?: boolean | Prisma.Workspace$invoicesArgs<ExtArgs>
   _count?: boolean | Prisma.WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1513,6 +2217,8 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     sessions: Prisma.$ChatSessionPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     usageLogs: Prisma.$UsageLogPayload<ExtArgs>[]
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
+    invoices: Prisma.$InvoicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1524,6 +2230,12 @@ export type $WorkspacePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     maxAgents: number
     maxTools: number
     monthlyTokenQuota: number
+    stripeCustomerId: string | null
+    stripeSubscriptionId: string | null
+    subscriptionStatus: $Enums.SubscriptionStatus
+    currentPeriodStart: Date | null
+    currentPeriodEnd: Date | null
+    cancelAtPeriodEnd: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["workspace"]>
@@ -1927,6 +2639,8 @@ export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends runtim
   sessions<T extends Prisma.Workspace$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.Workspace$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   usageLogs<T extends Prisma.Workspace$usageLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$usageLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UsageLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.Workspace$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoices<T extends Prisma.Workspace$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workspace$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1965,6 +2679,12 @@ export interface WorkspaceFieldRefs {
   readonly maxAgents: Prisma.FieldRef<"Workspace", 'Int'>
   readonly maxTools: Prisma.FieldRef<"Workspace", 'Int'>
   readonly monthlyTokenQuota: Prisma.FieldRef<"Workspace", 'Int'>
+  readonly stripeCustomerId: Prisma.FieldRef<"Workspace", 'String'>
+  readonly stripeSubscriptionId: Prisma.FieldRef<"Workspace", 'String'>
+  readonly subscriptionStatus: Prisma.FieldRef<"Workspace", 'SubscriptionStatus'>
+  readonly currentPeriodStart: Prisma.FieldRef<"Workspace", 'DateTime'>
+  readonly currentPeriodEnd: Prisma.FieldRef<"Workspace", 'DateTime'>
+  readonly cancelAtPeriodEnd: Prisma.FieldRef<"Workspace", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Workspace", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Workspace", 'DateTime'>
 }
@@ -2520,6 +3240,54 @@ export type Workspace$usageLogsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.UsageLogScalarFieldEnum | Prisma.UsageLogScalarFieldEnum[]
+}
+
+/**
+ * Workspace.payments
+ */
+export type Workspace$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
+}
+
+/**
+ * Workspace.invoices
+ */
+export type Workspace$invoicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Invoice
+   */
+  select?: Prisma.InvoiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Invoice
+   */
+  omit?: Prisma.InvoiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceInclude<ExtArgs> | null
+  where?: Prisma.InvoiceWhereInput
+  orderBy?: Prisma.InvoiceOrderByWithRelationInput | Prisma.InvoiceOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceScalarFieldEnum | Prisma.InvoiceScalarFieldEnum[]
 }
 
 /**
