@@ -1,0 +1,441 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==================== CORE USER & WORKSPACE ====================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  emailVerified Boolean   @default(false) @map("email_verified")
+  firstName     String?   @map("first_name")
+  lastName      String?   @map("last_name")
+  avatarUrl     String?   @map("avatar_url")
+  role          UserRole  @default(USER)
+  status        UserStatus @default(ACTIVE)
+  
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+
+  workspaces    WorkspaceMember[]
+  userSessions  UserSession[]
+  auditLogs     AuditLog[]
+
+  @@map("users")
+}
+
+model UserSession {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  token         String    @unique
+  expiresAt     DateTime  @map("expires_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model Workspace {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  status      WorkspaceStatus @default(ACTIVE)
+  tier        WorkspaceTier @default(FREE)
+  
+  maxAgents        Int @default(1) @map("max_agents")
+  maxTools         Int @default(2) @map("max_tools")
+  monthlyTokenQuota Int @default(100000) @map("monthly_token_quota")
+  
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  members     WorkspaceMember[]
+  agents      Agent[]
+  providerKeys ProviderKey[]
+  apiKeys      ApiKey[]
+  sessions    ChatSession[]
+  auditLogs   AuditLog[]
+  usageLogs   UsageLog[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspaceId String    @map("workspace_id")
+  userId      String    @map("user_id")
+  role        WorkspaceRole @default(MEMBER)
+  joinedAt    DateTime  @default(now()) @map("joined_at")
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@map("workspace_members")
+}
+
+// ==================== PROVIDER KEYS ====================
+
+model ProviderKey {
+  id            String   @id @default(cuid())
+  workspaceId   String   @map("workspace_id")
+  provider      LLMProvider
+  encryptedKey  String   @map("encrypted_key")
+  keyHint       String   @map("key_hint")
+  isDefault     Boolean  @default(false) @map("is_default")
+  isActive      Boolean  @default(true) @map("is_active")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, provider, isDefault])
+  @@map("provider_keys")
+}
+
+model ApiKey {
+  id            String   @id @default(cuid())
+  workspaceId   String   @map("workspace_id")
+  
+  name          String
+  key           String   @unique
+  hashedKey     String   @unique @map("hashed_key")
+  lastUsedAt    DateTime? @map("last_used_at")
+  expiresAt     DateTime? @map("expires_at")
+  isActive      Boolean  @default(true) @map("is_active")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("api_keys")
+}
+
+// ==================== AGENTS ====================
+
+model Agent {
+  id            String   @id @default(cuid())
+  workspaceId   String   @map("workspace_id")
+  
+  name          String
+  description   String?
+  avatarUrl     String?  @map("avatar_url")
+  
+  systemPrompt  String   @map("system_prompt")
+  provider      LLMProvider
+  model         String
+  temperature   Float    @default(0.7)
+  maxTokens     Int      @default(2048) @map("max_tokens")
+  
+  memoryEnabled Boolean  @default(true) @map("memory_enabled")
+  contextWindow Int      @default(10) @map("context_window")
+  
+  uiMode        UiMode   @default(EMBEDDED) @map("ui_mode")
+  floatingPosition String? @map("floating_position")
+  theme         Json?
+  
+  allowedDomains String[] @map("allowed_domains")
+  requireAuth    Boolean  @default(false) @map("require_auth")
+  
+  isActive      Boolean  @default(true) @map("is_active")
+  isPublic      Boolean  @default(false) @map("is_public")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tools         Tool[]
+  sessions      ChatSession[]
+
+  @@map("agents")
+}
+
+// ==================== TOOLS ====================
+
+model Tool {
+  id            String   @id @default(cuid())
+  agentId       String   @map("agent_id")
+  
+  name          String
+  description   String
+  type          ToolType
+  
+  method        HttpMethod?
+  endpoint      String?
+  headers       Json?
+  bodyTemplate  Json?     @map("body_template")
+  
+  authType      ToolAuthType @default(NONE) @map("auth_type")
+  authConfig    Json?     @map("auth_config")
+  
+  inputSchema   Json      @map("input_schema")
+  outputSchema  Json?     @map("output_schema")
+  
+  requiresConfirmation Boolean @default(false) @map("requires_confirmation")
+  timeoutMs     Int       @default(30000) @map("timeout_ms")
+  retryCount    Int       @default(3) @map("retry_count")
+  
+  customCode    String?   @map("custom_code")
+  
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  agent         Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  executions    ToolExecution[]
+
+  @@map("tools")
+}
+
+// ==================== CHAT SESSIONS ====================
+
+model ChatSession {
+  id            String   @id @default(cuid())
+  workspaceId   String   @map("workspace_id")
+  agentId       String   @map("agent_id")
+  
+  visitorId     String?  @map("visitor_id")
+  visitorEmail  String?  @map("visitor_email")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  origin        String?
+  
+  status        SessionStatus @default(ACTIVE)
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  endedAt       DateTime? @map("ended_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  agent         Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  messages      Message[]
+  toolExecutions ToolExecution[]
+
+  @@index([workspaceId, agentId])
+  @@index([visitorId])
+  @@map("chat_sessions")
+}
+
+model Message {
+  id            String   @id @default(cuid())
+  sessionId     String   @map("session_id")
+  
+  role          MessageRole
+  content       String   @db.Text
+  
+  toolCalls     Json?    @map("tool_calls")
+  toolCallId    String?  @map("tool_call_id")
+  
+  tokensUsed    Int?     @map("tokens_used")
+  latencyMs     Int?     @map("latency_ms")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@map("messages")
+}
+
+// ==================== TOOL EXECUTIONS ====================
+
+model ToolExecution {
+  id            String   @id @default(cuid())
+  sessionId     String   @map("session_id")
+  toolId        String   @map("tool_id")
+  
+  input         Json
+  output        Json?
+  error         String?
+  
+  status        ExecutionStatus @default(PENDING)
+  
+  startedAt     DateTime @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  latencyMs     Int?     @map("latency_ms")
+  retryCount    Int      @default(0) @map("retry_count")
+
+  session       ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  tool          Tool        @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([toolId])
+  @@map("tool_executions")
+}
+
+// ==================== USAGE & AUDIT ====================
+
+model UsageLog {
+  id            String   @id @default(cuid())
+  workspaceId   String   @map("workspace_id")
+  
+  eventType     UsageEventType @map("event_type")
+  
+  provider      LLMProvider?
+  model         String?
+  tokensInput   Int?     @map("tokens_input")
+  tokensOutput  Int?     @map("tokens_output")
+  costUsd       Decimal? @map("cost_usd") @db.Decimal(10, 6)
+  
+  toolId        String?  @map("tool_id")
+  toolName      String?  @map("tool_name")
+  toolLatencyMs Int?     @map("tool_latency_ms")
+  
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  origin        String?
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, createdAt])
+  @@index([eventType, createdAt])
+  @@map("usage_logs")
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  workspaceId   String?  @map("workspace_id")
+  userId        String?  @map("user_id")
+  
+  action        AuditAction
+  entityType    String   @map("entity_type")
+  entityId      String   @map("entity_id")
+  
+  oldValue      Json?    @map("old_value")
+  newValue      Json?    @map("new_value")
+  
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workspace     Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  user          User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([entityType, entityId])
+  @@map("audit_logs")
+}
+
+// ==================== ENUMS ====================
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum WorkspaceStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_PAYMENT
+  CANCELLED
+}
+
+enum WorkspaceTier {
+  FREE
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum LLMProvider {
+  OPENAI
+  GEMINI
+  GROQ
+  OPENROUTER
+}
+
+enum UiMode {
+  EMBEDDED
+  FLOATING
+}
+
+enum ToolType {
+  REST_API
+  CLIENT_BRIDGE
+  CUSTOM_CODE
+}
+
+enum HttpMethod {
+  GET
+  POST
+  PUT
+  PATCH
+  DELETE
+}
+
+enum ToolAuthType {
+  NONE
+  BEARER
+  API_KEY
+  BASIC
+  OAUTH2
+}
+
+enum SessionStatus {
+  ACTIVE
+  PAUSED
+  ENDED
+  ERROR
+}
+
+enum MessageRole {
+  SYSTEM
+  USER
+  ASSISTANT
+  TOOL
+}
+
+enum ExecutionStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  CANCELLED
+  RETRYING
+}
+
+enum UsageEventType {
+  CHAT_MESSAGE
+  TOOL_EXECUTION
+  TOKEN_USAGE
+  AGENT_INVOCATION
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  VIEW
+  EXPORT
+  LOGIN
+  LOGOUT
+  API_KEY_ROTATED
+}
