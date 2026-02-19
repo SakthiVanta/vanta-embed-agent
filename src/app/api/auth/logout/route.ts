@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import prisma from '@/lib/prisma'
 
 export async function POST(request: NextRequest) {
@@ -12,6 +13,10 @@ export async function POST(request: NextRequest) {
         where: { token },
       })
     }
+
+    // Clear cookie
+    const cookieStore = await cookies()
+    cookieStore.delete('token')
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -63,7 +63,9 @@ export const ModelName = {
   Message: 'Message',
   ToolExecution: 'ToolExecution',
   UsageLog: 'UsageLog',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Payment: 'Payment',
+  Invoice: 'Invoice'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -121,6 +123,12 @@ export const WorkspaceScalarFieldEnum = {
   maxAgents: 'maxAgents',
   maxTools: 'maxTools',
   monthlyTokenQuota: 'monthlyTokenQuota',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  subscriptionStatus: 'subscriptionStatus',
+  currentPeriodStart: 'currentPeriodStart',
+  currentPeriodEnd: 'currentPeriodEnd',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -309,6 +317,44 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  stripePaymentIntentId: 'stripePaymentIntentId',
+  stripeCustomerId: 'stripeCustomerId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  description: 'description',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  stripeInvoiceId: 'stripeInvoiceId',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  amountDue: 'amountDue',
+  amountPaid: 'amountPaid',
+  amountRemaining: 'amountRemaining',
+  currency: 'currency',
+  status: 'status',
+  pdfUrl: 'pdfUrl',
+  hostedInvoiceUrl: 'hostedInvoiceUrl',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  createdAt: 'createdAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const SortOrder = {

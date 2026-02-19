@@ -155,7 +155,49 @@ export const AuditAction = {
   EXPORT: 'EXPORT',
   LOGIN: 'LOGIN',
   LOGOUT: 'LOGOUT',
-  API_KEY_ROTATED: 'API_KEY_ROTATED'
+  API_KEY_ROTATED: 'API_KEY_ROTATED',
+  SUBSCRIPTION_CREATED: 'SUBSCRIPTION_CREATED',
+  SUBSCRIPTION_UPDATED: 'SUBSCRIPTION_UPDATED',
+  SUBSCRIPTION_CANCELLED: 'SUBSCRIPTION_CANCELLED',
+  PAYMENT_SUCCEEDED: 'PAYMENT_SUCCEEDED',
+  PAYMENT_FAILED: 'PAYMENT_FAILED'
 } as const
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const SubscriptionStatus = {
+  INCOMPLETE: 'INCOMPLETE',
+  INCOMPLETE_EXPIRED: 'INCOMPLETE_EXPIRED',
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELED: 'CANCELED',
+  UNPAID: 'UNPAID',
+  PAUSED: 'PAUSED'
+} as const
+
+export type SubscriptionStatus = (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELED: 'CANCELED',
+  REFUNDED: 'REFUNDED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  PAID: 'PAID',
+  UNCOLLECTIBLE: 'UNCOLLECTIBLE',
+  VOID: 'VOID'
+} as const
+
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]

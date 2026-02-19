@@ -82,3 +82,13 @@ export type UsageLog = Prisma.UsageLogModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel

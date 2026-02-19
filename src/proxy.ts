@@ -1,51 +1,95 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// List of paths that are accessible without authentication
+const PUBLIC_PATHS = [
+  '/login',
+  '/register', 
+  '/pricing',
+  '/api/auth/login',
+  '/api/auth/register',
+  '/api/auth/logout',
+  '/api/embed',
+  '/api/stripe/webhook'
+]
+
+// Static assets that should bypass proxy
+const STATIC_PATHS = [
+  '/_next',
+  '/static',
+  '/favicon.ico',
+  '/robots.txt',
+  '/sitemap.xml'
+]
+
+// Support both named and default exports for compatibility
 export function proxy(request: NextRequest) {
-    // Handle CORS
-    const response = NextResponse.next();
-
-    // Set CORS headers for all responses
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    response.headers.set('Access-Control-Allow-Credentials', 'true');
-
-    // Handle preflight OPTIONS requests
-    if (request.method === 'OPTIONS') {
-        return new NextResponse(null, {
-            status: 200,
-            headers: response.headers,
-        });
-    }
-
-    const token = request.cookies.get('token')?.value
-    // console.log('Proxy executing. Path:', request.nextUrl.pathname);
-
-    const { pathname } = request.nextUrl
-
-    // Public paths that don't require authentication
-    const publicPaths = ['/login', '/register', '/api/auth/login', '/api/auth/register', '/api/embed']
-
-    // Check if current path is public or an API route
-    const isPublicPath = publicPaths.some(path => pathname.startsWith(path)) || pathname.startsWith('/api/');
-
-    // Redirect unauthenticated users to login for dashboard pages
-    if (!token && !isPublicPath) {
-        return NextResponse.redirect(new URL('/login', request.url))
-    }
-
-    // Redirect authenticated users away from login/register
-    if (token && (pathname === '/login' || pathname === '/register')) {
-        return NextResponse.redirect(new URL('/', request.url))
-    }
-
+  const { pathname } = request.nextUrl
+  
+  console.log(`[Proxy] Processing: ${pathname}`)
+  
+  // Check if it's a static asset
+  if (STATIC_PATHS.some(path => pathname.startsWith(path))) {
+    console.log(`[Proxy] Static path, skipping: ${pathname}`)
+    return NextResponse.next()
+  }
+  
+  // Check if path is public
+  const isPublicPath = PUBLIC_PATHS.some(path => 
+    pathname === path || pathname.startsWith(path + '/')
+  )
+  
+  // Get token from cookies
+  const token = request.cookies.get('token')?.value
+  const isAuthenticated = !!token
+  
+  console.log(`[Proxy] Path: ${pathname}, Public: ${isPublicPath}, Auth: ${isAuthenticated}`)
+  
+  // Handle preflight OPTIONS requests
+  if (request.method === 'OPTIONS') {
+    const response = new NextResponse(null, { status: 200 })
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
     return response
+  }
+  
+  // If user is authenticated and trying to access login/register, redirect to home
+  if (isAuthenticated && (pathname === '/login' || pathname === '/register')) {
+    console.log(`[Proxy] Authenticated user accessing auth page, redirecting to /`)
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+  
+  // If user is NOT authenticated and trying to access protected page, redirect to login
+  if (!isAuthenticated && !isPublicPath) {
+    console.log(`[Proxy] Unauthenticated user accessing protected page, redirecting to /login`)
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+  
+  // Continue to the requested page
+  console.log(`[Proxy] Allowing access to: ${pathname}`)
+  const response = NextResponse.next()
+  
+  // Add CORS headers for API routes
+  if (pathname.startsWith('/api/')) {
+    response.headers.set('Access-Control-Allow-Origin', '*')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+  }
+  
+  return response
 }
 
+// Default export for compatibility
+export default proxy
+
 export const config = {
-    matcher: [
-        // Match all paths except static files
-        '/((?!_next/static|_next/image|favicon.ico).*)',
-    ],
+  matcher: [
+    /*
+     * Match all paths except static files
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.).*)',
+  ],
 }

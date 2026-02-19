@@ -43,6 +43,12 @@ class MockRedis {
   async expire(key: string, seconds: number) {
     return this.pexpire(key, seconds * 1000)
   }
+
+  async setex(key: string, seconds: number, value: string) {
+    this.store.set(key, value)
+    this.expire(key, seconds)
+    return 'OK'
+  }
 }
 
 const globalForRedis = globalThis as unknown as {

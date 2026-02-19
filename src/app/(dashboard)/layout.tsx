@@ -3,18 +3,21 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { 
-  Bot, 
-  Wrench, 
-  Key, 
-  BarChart3, 
-  Settings, 
+import {
+  Bot,
+  Wrench,
+  Key,
+  BarChart3,
+  Settings,
   Users,
   LogOut,
   Menu,
-  ChevronDown
+  ChevronDown,
+  CreditCard,
+  LayoutDashboard
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { UserNav } from '@/components/user-nav'
 
 interface User {
   id: string
@@ -40,7 +43,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     // Load user data from localStorage
     const userData = localStorage.getItem('user')
     const workspaceData = localStorage.getItem('workspace')
-    
+
     if (userData) {
       setUser(JSON.parse(userData))
     }
@@ -50,15 +53,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, [])
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token')
-    
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+      await fetch('/api/auth/logout', { method: 'POST' })
     } catch (error) {
       console.error('Logout error:', error)
     }
@@ -67,16 +63,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('workspace')
-    
+
     router.push('/login')
   }
 
   const navItems = [
+    { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/agents', icon: Bot, label: 'Agents' },
     { href: '/tools', icon: Wrench, label: 'Tools' },
-    { href: '/providers', icon: Key, label: 'API Keys' },
+    { href: '/providers', icon: Key, label: 'Providers' },
     { href: '/analytics', icon: BarChart3, label: 'Analytics' },
     { href: '/team', icon: Users, label: 'Team' },
+    { href: '/billing', icon: CreditCard, label: 'Billing' },
     { href: '/settings', icon: Settings, label: 'Settings' },
   ]
 
@@ -102,9 +100,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           <nav className="flex-1 p-3 space-y-1">
             {navItems.map((item) => (
-              <NavLink 
+              <NavLink
                 key={item.href}
-                href={item.href} 
+                href={item.href}
                 icon={<item.icon className="w-4 h-4" />}
                 active={pathname === item.href || pathname.startsWith(item.href + '/')}
               >
@@ -114,7 +112,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           <div className="p-3 border-t border-emerald-900">
-            <button 
+            <button
               onClick={handleLogout}
               className="flex items-center gap-2 w-full px-3 py-2 rounded-md text-emerald-200 hover:bg-emerald-900 transition-colors text-sm"
             >
@@ -126,7 +124,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Mobile menu overlay */}
         {isMobileMenuOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             onClick={() => setIsMobileMenuOpen(false)}
           />
@@ -136,7 +134,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 flex flex-col overflow-hidden">
           <header className="h-14 border-b bg-white dark:bg-slate-950 flex items-center justify-between px-4 lg:px-6">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
               >
@@ -148,14 +146,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
             <div className="flex items-center gap-4">
               <span className="hidden sm:inline text-sm text-muted-foreground">Pro Plan</span>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                    {user?.firstName?.[0]}{user?.lastName?.[0]}
-                  </span>
-                </div>
-                <ChevronDown className="w-4 h-4 text-slate-400 hidden sm:block" />
-              </div>
+              <UserNav />
             </div>
           </header>
 
@@ -168,12 +159,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   )
 }
 
-function NavLink({ 
-  href, 
-  icon, 
+function NavLink({
+  href,
+  icon,
   children,
   active = false
-}: { 
+}: {
   href: string
   icon: React.ReactNode
   children: React.ReactNode
@@ -182,11 +173,10 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors text-sm ${
-        active 
-          ? 'bg-emerald-900 text-white' 
-          : 'text-emerald-100 hover:bg-emerald-900'
-      }`}
+      className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors text-sm ${active
+        ? 'bg-emerald-900 text-white'
+        : 'text-emerald-100 hover:bg-emerald-900'
+        }`}
     >
       {icon}
       {children}
