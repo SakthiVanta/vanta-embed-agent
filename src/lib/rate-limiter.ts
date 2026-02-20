@@ -23,19 +23,28 @@ export class RateLimiter {
     const windowStart = Math.floor(now / this.config.window) * this.config.window
     const redisKey = `ratelimit:${key}:${windowStart}`
 
-    const current = await redis.incr(redisKey)
-    
-    if (current === 1) {
-      await redis.pexpire(redisKey, this.config.window)
-    }
+    try {
+      const current = await redis.incr(redisKey)
 
-    const remaining = Math.max(0, this.config.requests - current)
-    const reset = windowStart + this.config.window
+      if (current === 1) {
+        await redis.pexpire(redisKey, this.config.window)
+      }
 
-    return {
-      success: current <= this.config.requests,
-      remaining,
-      reset,
+      const remaining = Math.max(0, this.config.requests - current)
+      const reset = windowStart + this.config.window
+
+      return {
+        success: current <= this.config.requests,
+        remaining,
+        reset,
+      }
+    } catch (error) {
+      console.error('RateLimiter: Redis error, bypassing rate limit.', error)
+      return {
+        success: true, // Fail open to keep app working when Redis is down
+        remaining: this.config.requests,
+        reset: now + this.config.window
+      }
     }
   }
 

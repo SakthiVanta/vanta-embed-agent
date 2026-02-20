@@ -15,12 +15,20 @@ export const resolveTenant = async (
   requestOrigin?: string
 ): Promise<TenantContext> => {
   try {
-    const cached = await redis.get(cacheKeys.agent(agentId))
-    let agent: any
+    let agent: any = null
 
-    if (cached) {
-      agent = JSON.parse(cached)
-    } else {
+    // 1. Try Redis lookup
+    try {
+      const cached = await redis.get(cacheKeys.agent(agentId))
+      if (cached) {
+        agent = JSON.parse(cached)
+      }
+    } catch (redisError) {
+      console.warn('resolveTenant: Redis error during lookup, falling back to database.', redisError)
+    }
+
+    // 2. Database lookup if not in cache or Redis failed
+    if (!agent) {
       agent = await prisma.agent.findUnique({
         where: { id: agentId },
         include: {
@@ -29,11 +37,16 @@ export const resolveTenant = async (
       })
 
       if (agent) {
-        await redis.setex(
-          cacheKeys.agent(agentId),
-          CACHE_TTL.AGENT,
-          JSON.stringify(agent)
-        )
+        // Attempt to cache
+        try {
+          await redis.setex(
+            cacheKeys.agent(agentId),
+            CACHE_TTL.AGENT,
+            JSON.stringify(agent)
+          )
+        } catch (redisError) {
+          console.warn('resolveTenant: Redis error during caching.', redisError)
+        }
       }
     }
 
@@ -98,6 +111,7 @@ export const resolveTenant = async (
       isValid: true,
     }
   } catch (error) {
+    console.error('resolveTenant: Fatal error:', error)
     return {
       workspaceId: '',
       agentId,
@@ -109,10 +123,13 @@ export const resolveTenant = async (
 }
 
 export const getWorkspaceConfig = async (workspaceId: string) => {
-  const cached = await redis.get(cacheKeys.workspace(workspaceId))
-  
-  if (cached) {
-    return JSON.parse(cached)
+  try {
+    const cached = await redis.get(cacheKeys.workspace(workspaceId))
+    if (cached) {
+      return JSON.parse(cached)
+    }
+  } catch (redisError) {
+    console.warn('getWorkspaceConfig: Redis error, falling back to database.', redisError)
   }
 
   const workspace = await prisma.workspace.findUnique({
@@ -120,11 +137,15 @@ export const getWorkspaceConfig = async (workspaceId: string) => {
   })
 
   if (workspace) {
-    await redis.setex(
-      cacheKeys.workspace(workspaceId),
-      CACHE_TTL.WORKSPACE,
-      JSON.stringify(workspace)
-    )
+    try {
+      await redis.setex(
+        cacheKeys.workspace(workspaceId),
+        CACHE_TTL.WORKSPACE,
+        JSON.stringify(workspace)
+      )
+    } catch (redisError) {
+      // Ignore caching errors
+    }
   }
 
   return workspace
