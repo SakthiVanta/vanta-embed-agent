@@ -14,6 +14,22 @@ const createAgentSchema = z.object({
     provider: z.nativeEnum(LLMProvider),
     model: z.string().min(1, "Model is required"),
     workspaceId: z.string().min(1, "Workspace ID is required"),
+    avatarUrl: z.string().optional(),
+    // theme fields
+    primaryColor: z.string().optional(),
+    backgroundColor: z.string().optional(),
+    textColor: z.string().optional(),
+    buttonColor: z.string().optional(),
+    buttonTextColor: z.string().optional(),
+
+    // advanced fields
+    welcomeMessage: z.string().optional(),
+    mood: z.string().optional(),
+    fontFamily: z.string().optional(),
+    supportEmail: z.string().optional(),
+    logoUrl: z.string().optional(),
+    contactLink: z.string().optional(),
+    suggestions: z.string().optional(), // Store as comma separated string or parse to array
 })
 
 export async function createAgent(formData: FormData) {
@@ -24,6 +40,19 @@ export async function createAgent(formData: FormData) {
         provider: formData.get("provider"),
         model: formData.get("model"),
         workspaceId: formData.get("workspaceId"),
+        avatarUrl: formData.get("avatarUrl") || undefined,
+        primaryColor: formData.get("primaryColor") || undefined,
+        backgroundColor: formData.get("backgroundColor") || undefined,
+        textColor: formData.get("textColor") || undefined,
+        buttonColor: formData.get("buttonColor") || undefined,
+        buttonTextColor: formData.get("buttonTextColor") || undefined,
+        welcomeMessage: formData.get("welcomeMessage") || undefined,
+        mood: formData.get("mood") || undefined,
+        fontFamily: formData.get("fontFamily") || undefined,
+        supportEmail: formData.get("supportEmail") || undefined,
+        logoUrl: formData.get("logoUrl") || undefined,
+        contactLink: formData.get("contactLink") || undefined,
+        suggestions: formData.get("suggestions") || undefined,
     }
 
     const result = createAgentSchema.safeParse(rawData)
@@ -33,7 +62,22 @@ export async function createAgent(formData: FormData) {
     }
 
     try {
-        const { workspaceId, ...data } = result.data
+        const {
+            workspaceId,
+            primaryColor,
+            backgroundColor,
+            textColor,
+            buttonColor,
+            buttonTextColor,
+            welcomeMessage,
+            mood,
+            fontFamily,
+            supportEmail,
+            logoUrl,
+            contactLink,
+            suggestions,
+            ...data
+        } = result.data
 
         // Check limits
         const workspace = await prisma.workspace.findUnique({
@@ -48,10 +92,28 @@ export async function createAgent(formData: FormData) {
             }
         }
 
+        // Build theme config
+        const themeConfig: Record<string, any> = {}
+        if (primaryColor) themeConfig.primaryColor = primaryColor
+        if (backgroundColor) themeConfig.backgroundColor = backgroundColor
+        if (textColor) themeConfig.textColor = textColor
+        if (buttonColor) themeConfig.buttonColor = buttonColor
+        if (buttonTextColor) themeConfig.buttonTextColor = buttonTextColor
+        if (welcomeMessage) themeConfig.welcomeMessage = welcomeMessage
+        if (mood) themeConfig.mood = mood
+        if (fontFamily) themeConfig.fontFamily = fontFamily
+        if (supportEmail) themeConfig.supportEmail = supportEmail
+        if (logoUrl) themeConfig.logoUrl = logoUrl
+        if (contactLink) themeConfig.contactLink = contactLink
+        if (suggestions) {
+            themeConfig.suggestions = suggestions.split(',').map(s => s.trim()).filter(s => s.length > 0)
+        }
+
         await prisma.agent.create({
             data: {
                 workspaceId,
                 ...data,
+                theme: Object.keys(themeConfig).length > 0 ? themeConfig : undefined,
                 // Defaults
                 temperature: 0.7,
                 maxTokens: 2048,
@@ -66,6 +128,87 @@ export async function createAgent(formData: FormData) {
     } catch (error) {
         console.error("Failed to create agent:", error)
         return { error: "Failed to create agent" }
+    }
+}
+
+export async function updateAgent(id: string, formData: FormData) {
+    const rawData = {
+        name: formData.get("name"),
+        description: formData.get("description"),
+        systemPrompt: formData.get("systemPrompt"),
+        provider: formData.get("provider"),
+        model: formData.get("model"),
+        workspaceId: formData.get("workspaceId"),
+        avatarUrl: formData.get("avatarUrl") || undefined,
+        primaryColor: formData.get("primaryColor") || undefined,
+        backgroundColor: formData.get("backgroundColor") || undefined,
+        textColor: formData.get("textColor") || undefined,
+        buttonColor: formData.get("buttonColor") || undefined,
+        buttonTextColor: formData.get("buttonTextColor") || undefined,
+        welcomeMessage: formData.get("welcomeMessage") || undefined,
+        mood: formData.get("mood") || undefined,
+        fontFamily: formData.get("fontFamily") || undefined,
+        supportEmail: formData.get("supportEmail") || undefined,
+        logoUrl: formData.get("logoUrl") || undefined,
+        contactLink: formData.get("contactLink") || undefined,
+        suggestions: formData.get("suggestions") || undefined,
+    }
+
+    const result = createAgentSchema.safeParse(rawData)
+
+    if (!result.success) {
+        return { error: result.error.flatten().fieldErrors }
+    }
+
+    try {
+        const {
+            workspaceId,
+            primaryColor,
+            backgroundColor,
+            textColor,
+            buttonColor,
+            buttonTextColor,
+            welcomeMessage,
+            mood,
+            fontFamily,
+            supportEmail,
+            logoUrl,
+            contactLink,
+            suggestions,
+            ...data
+        } = result.data
+
+        // Build theme config
+        const themeConfig: Record<string, any> = {}
+        if (primaryColor) themeConfig.primaryColor = primaryColor
+        if (backgroundColor) themeConfig.backgroundColor = backgroundColor
+        if (textColor) themeConfig.textColor = textColor
+        if (buttonColor) themeConfig.buttonColor = buttonColor
+        if (buttonTextColor) themeConfig.buttonTextColor = buttonTextColor
+        if (welcomeMessage) themeConfig.welcomeMessage = welcomeMessage
+        if (mood) themeConfig.mood = mood
+        if (fontFamily) themeConfig.fontFamily = fontFamily
+        if (supportEmail) themeConfig.supportEmail = supportEmail
+        if (logoUrl) themeConfig.logoUrl = logoUrl
+        if (contactLink) themeConfig.contactLink = contactLink
+        if (suggestions) {
+            themeConfig.suggestions = suggestions.split(',').map(s => s.trim()).filter(s => s.length > 0)
+        }
+
+        await prisma.agent.update({
+            where: { id, workspaceId },
+            data: {
+                ...data,
+                theme: Object.keys(themeConfig).length > 0 ? themeConfig : undefined,
+            },
+        })
+
+        revalidatePath(`/agents/${id}`)
+        revalidatePath("/agents")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to update agent:", error)
+        return { error: "Failed to update agent" }
     }
 }
 

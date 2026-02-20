@@ -7,20 +7,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Bot, 
-  ArrowLeft, 
-  Edit, 
-  Trash2, 
-  Copy, 
-  MessageSquare, 
+import {
+  Bot,
+  ArrowLeft,
+  Edit,
+  Trash2,
+  Copy,
+  MessageSquare,
   Wrench,
   Settings,
   BarChart3,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { EditAgentModal } from '@/components/dashboard/edit-agent-modal'
+import { getApiKeys } from '@/app/actions'
 
 interface Agent {
   id: string
@@ -50,20 +54,25 @@ export default function AgentDetailPage() {
   const params = useParams()
   const router = useRouter()
   const agentId = params.id as string
-  
+
   const [agent, setAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(true)
-  const [workspace, setWorkspace] = useState<{id: string} | null>(null)
+  const [workspace, setWorkspace] = useState<{ id: string } | null>(null)
+  const [apiKey, setApiKey] = useState<string | null>(null)
+  const [showApiKey, setShowApiKey] = useState(false)
 
   useEffect(() => {
     const ws = localStorage.getItem('workspace')
     if (ws) {
-      setWorkspace(JSON.parse(ws))
+      const parsedWs = JSON.parse(ws)
+      setWorkspace(parsedWs)
+      fetchAgentData(parsedWs.id)
+    } else {
+      fetchAgentData()
     }
-    fetchAgentData()
   }, [agentId])
 
-  const fetchAgentData = async () => {
+  const fetchAgentData = async (wsId?: string) => {
     try {
       const response = await fetch(`/api/agents/${agentId}`)
       if (response.ok) {
@@ -72,7 +81,17 @@ export default function AgentDetailPage() {
       } else {
         toast.error('Agent not found')
         router.push('/agents')
+        return
       }
+
+      if (wsId) {
+        const keysRes = await getApiKeys(wsId)
+        if (keysRes.success && keysRes.keys && keysRes.keys.length > 0) {
+          // Assuming key field is returned containing the raw or display key
+          setApiKey(keysRes.keys[0].key || keysRes.keys[0].displayKey)
+        }
+      }
+
     } catch (error) {
       console.error('Error fetching agent:', error)
       toast.error('Failed to load agent data')
@@ -86,14 +105,19 @@ export default function AgentDetailPage() {
     toast.success('Agent ID copied to clipboard')
   }
 
+  const handleCopyCode = (text: string) => {
+    navigator.clipboard.writeText(text)
+    toast.success('Code copied to clipboard')
+  }
+
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this agent? This action cannot be undone.')) return
-    
+
     try {
       const response = await fetch(`/api/agents?id=${agentId}&workspaceId=${workspace?.id}`, {
         method: 'DELETE'
       })
-      
+
       if (response.ok) {
         toast.success('Agent deleted successfully')
         router.push('/agents')
@@ -106,7 +130,18 @@ export default function AgentDetailPage() {
   }
 
   const getEmbedCode = () => {
-    return `<script src="${window.location.origin}/embed/${agentId}.js"></script>`
+    return `import { VantaAgent } from 'vanta-agent-embed-sdk';
+
+function App() {
+  return (
+    <VantaAgent 
+      agentId="${agentId}"
+      ${apiKey ? `apiKey="${showApiKey ? apiKey : 'vk_...'}"` : '// Add your API key here'}
+      type="floating" // 'floating' | 'embedded' | 'fullpage'
+      position="bottom-right" 
+    />
+  );
+}`
   }
 
   if (loading) {
@@ -163,10 +198,12 @@ export default function AgentDetailPage() {
             <Copy className="w-4 h-4 mr-2" />
             Copy ID
           </Button>
-          <Button variant="outline" size="sm">
-            <Edit className="w-4 h-4 mr-2" />
-            Edit
-          </Button>
+          <EditAgentModal agent={agent} workspaceId={workspace?.id || ''}>
+            <Button variant="outline" size="sm">
+              <Edit className="w-4 h-4 mr-2" />
+              Edit
+            </Button>
+          </EditAgentModal>
           <Button variant="destructive" size="sm" onClick={handleDelete}>
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -270,6 +307,86 @@ export default function AgentDetailPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle>Appearance</CardTitle>
+                <CardDescription>Visual customized settings</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Avatar URL</span>
+                  <span className="font-medium truncate max-w-[200px]" title={(agent as any).avatarUrl}>
+                    {(agent as any).avatarUrl || 'Default'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Primary Color</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs">{(agent as any).theme?.primaryColor || 'Default'}</span>
+                    {(agent as any).theme?.primaryColor && <div className="w-4 h-4 rounded-full border" style={{ backgroundColor: (agent as any).theme.primaryColor }} />}
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Background Color</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs">{(agent as any).theme?.backgroundColor || 'Default'}</span>
+                    {(agent as any).theme?.backgroundColor && <div className="w-4 h-4 rounded-full border" style={{ backgroundColor: (agent as any).theme.backgroundColor }} />}
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Text Color</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs">{(agent as any).theme?.textColor || 'Default'}</span>
+                    {(agent as any).theme?.textColor && <div className="w-4 h-4 rounded-full border" style={{ backgroundColor: (agent as any).theme.textColor }} />}
+                  </div>
+                </div>
+                {(agent as any).theme?.welcomeMessage && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Welcome Message</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.welcomeMessage}>{(agent as any).theme.welcomeMessage}</span>
+                  </div>
+                )}
+                {(agent as any).theme?.mood && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Mood Context</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.mood}>{(agent as any).theme.mood}</span>
+                  </div>
+                )}
+                {(agent as any).theme?.fontFamily && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Font</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.fontFamily}>{(agent as any).theme.fontFamily}</span>
+                  </div>
+                )}
+                {(agent as any).theme?.supportEmail && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Support Email</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.supportEmail}>{(agent as any).theme.supportEmail}</span>
+                  </div>
+                )}
+                {(agent as any).theme?.contactLink && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Contact Link</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.contactLink}>{(agent as any).theme.contactLink}</span>
+                  </div>
+                )}
+                {(agent as any).theme?.logoUrl && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Logo URL</span>
+                    <span className="font-medium truncate max-w-[200px]" title={(agent as any).theme.logoUrl}>{(agent as any).theme.logoUrl}</span>
+                  </div>
+                )}
+                {Array.isArray((agent as any).theme?.suggestions) && (agent as any).theme.suggestions.length > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Suggestions</span>
+                    <span className="font-medium truncate max-w-[200px] text-xs" title={JSON.stringify((agent as any).theme.suggestions)}>
+                      {JSON.stringify((agent as any).theme.suggestions)}
+                    </span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="md:col-span-2">
+              <CardHeader>
                 <CardTitle>Allowed Domains</CardTitle>
                 <CardDescription>Domains where this agent can be embedded</CardDescription>
               </CardHeader>
@@ -300,19 +417,37 @@ export default function AgentDetailPage() {
               <div className="space-y-4">
                 <div>
                   <span className="text-sm text-muted-foreground">Agent ID</span>
-                  <p className="font-mono text-sm bg-slate-50 dark:bg-slate-900 p-2 rounded mt-1">{agent.id}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border p-2 rounded flex-1">{agent.id}</p>
+                    <Button variant="outline" size="icon" onClick={() => handleCopyCode(agent.id)}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 <div>
+                  <div className="flex justify-between items-end mb-1">
+                    <span className="text-sm text-muted-foreground">Workspace API Key</span>
+                    <Button variant="ghost" size="sm" onClick={() => setShowApiKey(!showApiKey)} className="h-6">
+                      {showApiKey ? <EyeOff className="w-3 h-3 mr-1" /> : <Eye className="w-3 h-3 mr-1" />}
+                      {showApiKey ? 'Hide' : 'Show'}
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="font-mono text-sm bg-slate-50 dark:bg-slate-900 border p-2 rounded flex-1">
+                      {apiKey ? (showApiKey ? apiKey : 'vk_••••••••••••••••••••••••') : 'No active API Key found in workspace.'}
+                    </p>
+                    <Button variant="outline" size="icon" onClick={() => apiKey && handleCopyCode(apiKey)} disabled={!apiKey}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="pt-4 border-t">
                   <span className="text-sm text-muted-foreground">UI Mode</span>
                   <p className="font-medium">{agent.uiMode}</p>
                 </div>
                 <div>
                   <span className="text-sm text-muted-foreground">Created</span>
                   <p className="font-medium">{new Date(agent.createdAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-muted-foreground">Last Updated</span>
-                  <p className="font-medium">{new Date(agent.updatedAt).toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
@@ -322,20 +457,44 @@ export default function AgentDetailPage() {
         <TabsContent value="embed">
           <Card>
             <CardHeader>
-              <CardTitle>Embed Code</CardTitle>
-              <CardDescription>Add this script to your website to embed the agent</CardDescription>
+              <CardTitle>Embed Code (React / Next.js)</CardTitle>
+              <CardDescription>Install the package and use the component in your project.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="bg-slate-950 text-slate-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">
-                {getEmbedCode()}
+            <CardContent className="space-y-6">
+
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">1. Install Package</h4>
+                <div className="bg-slate-950 text-slate-50 p-4 rounded-lg font-mono text-sm overflow-x-auto relative group">
+                  <p>npm install vanta-agent-embed-sdk</p>
+                  <Button size="icon" variant="ghost" className="absolute top-2 right-2 hidden group-hover:flex h-8 w-8 text-slate-300 hover:text-white" onClick={() => handleCopyCode("npm install vanta-agent-embed-sdk")}>
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <Button onClick={() => {
-                navigator.clipboard.writeText(getEmbedCode())
-                toast.success('Embed code copied!')
-              }}>
-                <Copy className="w-4 h-4 mr-2" />
-                Copy Code
-              </Button>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-medium text-sm">2. Add Component Code</h4>
+                  <Button variant="ghost" size="sm" onClick={() => setShowApiKey(!showApiKey)} className="h-6 -mb-2">
+                    {showApiKey ? <EyeOff className="w-3 h-3 mr-1" /> : <Eye className="w-3 h-3 mr-1" />}
+                    {showApiKey ? 'Hide Key in Code' : 'Show Key in Code'}
+                  </Button>
+                </div>
+                <div className="bg-slate-950 text-slate-50 p-4 rounded-lg font-mono text-sm overflow-x-auto whitespace-pre relative group">
+                  {getEmbedCode()}
+                  <Button size="icon" variant="ghost" className="absolute top-2 right-2 hidden group-hover:flex h-8 w-8 text-slate-300 hover:text-white" onClick={() => handleCopyCode(getEmbedCode())}>
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="bg-slate-100 dark:bg-slate-900 border rounded-lg p-4">
+                <h5 className="font-medium mb-2">Environment Variables Option</h5>
+                <p className="text-sm text-muted-foreground">
+                  If you prefer not to hardcode the API key, you can set <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">NEXT_PUBLIC_VANTA_API_KEY</code>, <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">VITE_VANTA_API_KEY</code>, or <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">VANTA_API_KEY</code> in your environment, and simply pass <code className="bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">&lt;VantaAgent agentId="{agentId}" /&gt;</code> to auto-configure securely.
+                </p>
+              </div>
+
             </CardContent>
           </Card>
         </TabsContent>

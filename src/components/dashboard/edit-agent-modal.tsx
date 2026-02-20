@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useFormStatus } from "react-dom"
-import { Plus, Loader2 } from "lucide-react"
+import { Loader2, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,18 +23,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { createAgent } from "@/app/actions"
-import { toast } from "sonner" // Assuming sonner is installed, if not we'll use simple alert or verify
+import { updateAgent } from "@/app/actions"
+import { toast } from "sonner"
 
-export function CreateAgentModal({ workspaceId, children }: { workspaceId: string, children?: React.ReactNode }) {
+export function EditAgentModal({ agent, workspaceId, children }: { agent: any, workspaceId: string, children?: React.ReactNode }) {
     const [open, setOpen] = useState(false)
 
     async function clientAction(formData: FormData) {
-        const result = await createAgent(formData)
+        const result = await updateAgent(agent.id, formData)
         if (result?.error) {
-            // Simple error handling for now
-            alert(typeof result.error === 'string' ? result.error : "Failed to create agent")
+            toast.error(typeof result.error === 'string' ? result.error : "Failed to update agent")
         } else {
+            toast.success("Agent updated successfully!")
             setOpen(false)
         }
     }
@@ -43,35 +43,35 @@ export function CreateAgentModal({ workspaceId, children }: { workspaceId: strin
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {children || (
-                    <Button className="w-full justify-start gap-2" variant="outline">
-                        <Plus className="w-4 h-4" />
-                        Create New Agent
+                    <Button variant="outline" size="sm">
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit
                     </Button>
                 )}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>Create Agent</DialogTitle>
+                    <DialogTitle>Edit Agent</DialogTitle>
                     <DialogDescription>
-                        Configure your new AI agent.
+                        Update the configuration for {agent.name}.
                     </DialogDescription>
                 </DialogHeader>
                 <form action={clientAction} className="grid gap-4 py-4">
                     <input type="hidden" name="workspaceId" value={workspaceId} />
                     <div className="grid gap-2">
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" placeholder="Customer Support Bot" required />
+                        <Input id="name" name="name" defaultValue={agent.name} required />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="description">Description</Label>
-                        <Input id="description" name="description" placeholder="Handles customer inquiries..." />
+                        <Input id="description" name="description" defaultValue={agent.description || ''} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="systemPrompt">System Prompt</Label>
                         <Textarea
                             id="systemPrompt"
                             name="systemPrompt"
-                            placeholder="You are a helpful assistant..."
+                            defaultValue={agent.systemPrompt}
                             className="resize-none"
                             rows={4}
                             required
@@ -80,7 +80,7 @@ export function CreateAgentModal({ workspaceId, children }: { workspaceId: strin
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="provider">Provider</Label>
-                            <Select name="provider" defaultValue="OPENAI" required>
+                            <Select name="provider" defaultValue={agent.provider} required>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select" />
                                 </SelectTrigger>
@@ -94,7 +94,7 @@ export function CreateAgentModal({ workspaceId, children }: { workspaceId: strin
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="model">Model</Label>
-                            <Input id="model" name="model" placeholder="gpt-4o" defaultValue="gpt-4o" required />
+                            <Input id="model" name="model" defaultValue={agent.model} required />
                         </div>
                     </div>
 
@@ -103,33 +103,25 @@ export function CreateAgentModal({ workspaceId, children }: { workspaceId: strin
 
                         <div className="grid gap-2">
                             <Label htmlFor="avatarUrl">Avatar URL</Label>
-                            <Input id="avatarUrl" name="avatarUrl" placeholder="https://example.com/bot.png" />
+                            <Input id="avatarUrl" name="avatarUrl" defaultValue={agent.avatarUrl || ''} />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-4 hidden sm:grid sm:grid-cols-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="primaryColor">Primary Color</Label>
-                                <div className="flex gap-2 items-center">
-                                    <Input id="primaryColor" name="primaryColor" type="color" defaultValue="#00E5FF" className="w-12 h-10 p-1 cursor-pointer" />
-                                </div>
+                                <Input id="primaryColor" name="primaryColor" type="color" defaultValue={agent.theme?.primaryColor || "#00E5FF"} className="w-12 h-10 p-1 cursor-pointer" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="backgroundColor">Background Window</Label>
-                                <div className="flex gap-2 items-center">
-                                    <Input id="backgroundColor" name="backgroundColor" type="color" defaultValue="#0f172a" className="w-12 h-10 p-1 cursor-pointer" />
-                                </div>
+                                <Input id="backgroundColor" name="backgroundColor" type="color" defaultValue={agent.theme?.backgroundColor || "#0f172a"} className="w-12 h-10 p-1 cursor-pointer" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="textColor">Text Color</Label>
-                                <div className="flex gap-2 items-center">
-                                    <Input id="textColor" name="textColor" type="color" defaultValue="#f8fafc" className="w-12 h-10 p-1 cursor-pointer" />
-                                </div>
+                                <Input id="textColor" name="textColor" type="color" defaultValue={agent.theme?.textColor || "#f8fafc"} className="w-12 h-10 p-1 cursor-pointer" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="buttonColor">Trigger Button Color</Label>
-                                <div className="flex gap-2 items-center">
-                                    <Input id="buttonColor" name="buttonColor" type="color" defaultValue="#0055FF" className="w-12 h-10 p-1 cursor-pointer" />
-                                </div>
+                                <Input id="buttonColor" name="buttonColor" type="color" defaultValue={agent.theme?.buttonColor || "#0055FF"} className="w-12 h-10 p-1 cursor-pointer" />
                             </div>
                         </div>
                     </div>
@@ -139,33 +131,33 @@ export function CreateAgentModal({ workspaceId, children }: { workspaceId: strin
 
                         <div className="grid gap-2">
                             <Label htmlFor="welcomeMessage">Welcome Message</Label>
-                            <Input id="welcomeMessage" name="welcomeMessage" placeholder="Hi there! How can I help?" />
+                            <Input id="welcomeMessage" name="welcomeMessage" defaultValue={agent.theme?.welcomeMessage || ''} />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="mood">Mood (Prompt Context)</Label>
-                                <Input id="mood" name="mood" placeholder="Professional, friendly..." />
+                                <Input id="mood" name="mood" defaultValue={agent.theme?.mood || ''} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="fontFamily">Font Family</Label>
-                                <Input id="fontFamily" name="fontFamily" placeholder="Inter, sans-serif" />
+                                <Input id="fontFamily" name="fontFamily" defaultValue={agent.theme?.fontFamily || ''} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="supportEmail">Support Email</Label>
-                                <Input id="supportEmail" name="supportEmail" type="email" placeholder="help@vanta.com" />
+                                <Input id="supportEmail" name="supportEmail" type="email" defaultValue={agent.theme?.supportEmail || ''} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="logoUrl">Company Logo URL</Label>
-                                <Input id="logoUrl" name="logoUrl" type="url" placeholder="https://..." />
+                                <Input id="logoUrl" name="logoUrl" type="url" defaultValue={agent.theme?.logoUrl || ''} />
                             </div>
                             <div className="grid gap-2 col-span-2">
                                 <Label htmlFor="contactLink">Contact Link</Label>
-                                <Input id="contactLink" name="contactLink" type="url" placeholder="https://example.com/contact" />
+                                <Input id="contactLink" name="contactLink" type="url" defaultValue={agent.theme?.contactLink || ''} />
                             </div>
                             <div className="grid gap-2 col-span-2">
                                 <Label htmlFor="suggestions">Suggestions (Comma separated)</Label>
-                                <Input id="suggestions" name="suggestions" placeholder="Pricing?, Help, Features" />
+                                <Input id="suggestions" name="suggestions" defaultValue={Array.isArray(agent.theme?.suggestions) ? agent.theme.suggestions.join(', ') : ''} />
                             </div>
                         </div>
                     </div>
@@ -184,7 +176,7 @@ function SubmitButton() {
     return (
         <Button type="submit" disabled={pending}>
             {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create Agent
+            Save Changes
         </Button>
     )
 }
